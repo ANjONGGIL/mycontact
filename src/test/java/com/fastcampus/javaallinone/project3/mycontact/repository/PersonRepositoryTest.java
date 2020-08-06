@@ -23,30 +23,27 @@ class PersonRepositoryTest {
     @Test
     void crud(){
         Person person = new Person();
-        person.setName("martine");
+        person.setName("john");
         person.setAge(10);
         person.setBloodTypes("A");
 
         personRepository.save(person);
 
-        System.out.println(personRepository.findAll());
+        List<Person> result = personRepository.findByName("john");
 
-        List<Person> people = personRepository.findAll();
-
-        assertThat(people.get(0).getName(),is("martine"));
+        assertThat(result.get(0).getName(),is("john"));
 
     }
 
     @Test
     void findByBloodTypes(){
-        givenPerson("martine",10,"A",LocalDate.of(1991,8,15));
-        givenPerson("david",7,"AB",LocalDate.of(1991,8,15));
-        givenPerson("dennis",8,"B",LocalDate.of(1991,8,15));
-        givenPerson("jonggil",9,"O",LocalDate.of(1998,4,4));
-
         List<Person> result = personRepository.findByBloodTypes("A");
 
-        System.out.println(result);
+        assertThat(result.get(0).getName(),is("martine"));
+        assertThat(result.get(1).getName(),is("benny"));
+
+
+
 
 
     }
@@ -54,11 +51,7 @@ class PersonRepositoryTest {
     @Test
     void findByBirthdayBetween(){
 
-        givenPerson("martine",10,"A",LocalDate.of(1991,8,15));
-        givenPerson("david",7,"AB",LocalDate.of(1991,8,15));
-        givenPerson("dennis",8,"B",LocalDate.of(1991,8,15));
-        givenPerson("jonggil",9,"O",LocalDate.of(1998,4,4));
-        List<Person> result = personRepository.findByMonthOfBirthday(4);
+        List<Person> result = personRepository.findByMonthOfBirthday(8);
 
         result.forEach(System.out::println);
     }

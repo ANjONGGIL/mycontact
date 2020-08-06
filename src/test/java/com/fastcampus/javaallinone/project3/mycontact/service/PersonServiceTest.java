@@ -12,6 +12,8 @@ import javax.swing.plaf.synth.SynthEditorPaneUI;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -33,11 +35,11 @@ class PersonServiceTest {
         result.forEach(System.out::println);
 
         Person person = result.get(3);
-        person.getBlock().setStartDate(LocalDate.now());
-        person.getBlock().setEndDate(LocalDate.now());
-
-        personRepository.save(person);
-        personRepository.findAll().forEach(System.out::println);
+//        person.getBlock().setStartDate(LocalDate.now());
+//        person.getBlock().setEndDate(LocalDate.now());
+//
+//        personRepository.save(person);
+//        personRepository.findAll().forEach(System.out::println);
 
 //        personRepository.delete(person);
 //        personRepository.findAll().forEach(System.out::println);
@@ -49,20 +51,15 @@ class PersonServiceTest {
     }
     @Test
     void getPeopleExcludeBlocks(){
-        givenPeople();
-
-
         List<Person> result = personService.getPersonExcludeBlocks();
 
-        result.forEach(System.out::println);
+        assertThat(result.get(0).getName(),is("martine"));
+        assertThat(result.get(1).getName(),is("david"));
     }
     @Test
     void getPeopleByName(){
-        givenPeople();
-
         List<Person> result = personService.getPeopleByName("martine");
-
-        result.forEach(System.out::println);
+        assertThat(result.get(0).getName(),is("martine"));
     }
 
 
