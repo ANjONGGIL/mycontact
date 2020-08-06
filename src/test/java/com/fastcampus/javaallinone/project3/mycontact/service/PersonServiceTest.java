@@ -1,20 +1,15 @@
 package com.fastcampus.javaallinone.project3.mycontact.service;
 
-import com.fastcampus.javaallinone.project3.mycontact.domain.Block;
 import com.fastcampus.javaallinone.project3.mycontact.domain.Person;
-import com.fastcampus.javaallinone.project3.mycontact.repository.BlockRepository;
 import com.fastcampus.javaallinone.project3.mycontact.repository.PersonRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.swing.plaf.synth.SynthEditorPaneUI;
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class PersonServiceTest {
@@ -23,12 +18,9 @@ class PersonServiceTest {
     private PersonService personService;
     @Autowired
     private PersonRepository personRepository;
-    @Autowired
-    private BlockRepository blockRepository;
 
     @Test
     void cascadeTest(){
-        givenPeople();
 
         List<Person> result = personRepository.findAll();
 
@@ -44,17 +36,8 @@ class PersonServiceTest {
 //        personRepository.delete(person);
 //        personRepository.findAll().forEach(System.out::println);
 //        blockRepository.findAll().forEach(System.out::println);
-        person.setBlock(null);
         personRepository.save(person);
         personRepository.findAll().forEach(System.out::println);
-        blockRepository.findAll().forEach(System.out::println);
-    }
-    @Test
-    void getPeopleExcludeBlocks(){
-        List<Person> result = personService.getPersonExcludeBlocks();
-
-        assertThat(result.get(0).getName(),is("martine"));
-        assertThat(result.get(1).getName(),is("david"));
     }
     @Test
     void getPeopleByName(){
@@ -64,19 +47,18 @@ class PersonServiceTest {
 
 
     private void givenPeople() {
-        givenPerson("martine",10,"A");
-        givenPerson("david",9,"B");
-        givenPerson("jongil",7,"O");
-        givenBlockPerson("martine",11,"AB");
+        givenPerson("martine","A");
+        givenPerson("david","B");
+        givenPerson("jongil","O");
+        givenBlockPerson("martine","AB");
     }
 
-    private void givenPerson(String name, int age, String bloodTypes) {
-        personRepository.save(new Person(name,age,bloodTypes));
+    private void givenPerson(String name, String bloodTypes) {
+        personRepository.save(new Person(name,bloodTypes));
     }
 
-    private void givenBlockPerson(String name, int age, String bloodType){
-        Person blockPerson = new Person(name,age,bloodType);
-        blockPerson.setBlock(new Block((name)));
+    private void givenBlockPerson(String name, String bloodType){
+        Person blockPerson = new Person(name,bloodType);
 
         personRepository.save(blockPerson);
     }

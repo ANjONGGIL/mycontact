@@ -1,10 +1,7 @@
 package com.fastcampus.javaallinone.project3.mycontact.service;
 
 import com.fastcampus.javaallinone.project3.mycontact.controller.dto.PersonDto;
-import com.fastcampus.javaallinone.project3.mycontact.domain.Block;
 import com.fastcampus.javaallinone.project3.mycontact.domain.Person;
-import com.fastcampus.javaallinone.project3.mycontact.domain.dto.Birthday;
-import com.fastcampus.javaallinone.project3.mycontact.repository.BlockRepository;
 import com.fastcampus.javaallinone.project3.mycontact.repository.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -20,13 +16,6 @@ public class PersonService {
     @Autowired
     private PersonRepository personRepository;
 ;
-
-    public List<Person> getPersonExcludeBlocks(){
-//        List<Person> people = personRepository.findAll();
-//
-//        return people.stream().filter(person -> person.getBlock()==null).collect(Collectors.toList());
-        return personRepository.findByBlockIsNull();
-    }
 
     @Transactional(readOnly = true)
     public Person getPerson(Long id){
