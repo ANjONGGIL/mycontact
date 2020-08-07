@@ -27,9 +27,6 @@ public class PersonService {
     }
 
     public List<Person> getPeopleByName(String name) {
-//        List<Person> people = personRepository.findAll();
-//
-//        return people.stream().filter(person ->person.getName().equals(name)).collect(Collectors.toList());
         return personRepository.findByName(name);
     }
 
@@ -54,7 +51,7 @@ public class PersonService {
 
     }
     @Transactional
-    public void modifyName(Long id,String name){
+    public void modify(Long id,String name){
         Person person = personRepository.findById(id).orElseThrow(()-> new RuntimeException("아이디가 존재하지 않습니다."));
 
         person.setName(name);

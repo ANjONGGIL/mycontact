@@ -1,75 +1,142 @@
 package com.fastcampus.javaallinone.project3.mycontact.service;
 
+import com.fastcampus.javaallinone.project3.mycontact.controller.dto.PersonDto;
 import com.fastcampus.javaallinone.project3.mycontact.domain.Person;
 import com.fastcampus.javaallinone.project3.mycontact.repository.PersonRepository;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatcher;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class PersonServiceTest {
 
-    @Autowired
+    @InjectMocks
     private PersonService personService;
-    @Autowired
+    @Mock
     private PersonRepository personRepository;
 
     @Test
-    void cascadeTest(){
-
-        List<Person> result = personRepository.findAll();
-
-        result.forEach(System.out::println);
-
-        Person person = result.get(3);
-//        person.getBlock().setStartDate(LocalDate.now());
-//        person.getBlock().setEndDate(LocalDate.now());
-//
-//        personRepository.save(person);
-//        personRepository.findAll().forEach(System.out::println);
-
-//        personRepository.delete(person);
-//        personRepository.findAll().forEach(System.out::println);
-//        blockRepository.findAll().forEach(System.out::println);
-        personRepository.save(person);
-        personRepository.findAll().forEach(System.out::println);
-    }
-    @Test
     void getPeopleByName(){
+        when(personRepository.findByName("martine"))
+                .thenReturn(Lists.newArrayList(new Person("martine")));
+
         List<Person> result = personService.getPeopleByName("martine");
+
+        assertThat(result.size(),is(1));
         assertThat(result.get(0).getName(),is("martine"));
     }
+    @Test
+    void getPerson(){
+        when(personRepository.findById(1L))
+                .thenReturn(Optional.of(new Person("martine")));
 
+        Person person = personService.getPerson(1L);
 
-    private void givenPeople() {
-        givenPerson("martine","A");
-        givenPerson("david","B");
-        givenPerson("jongil","O");
-        givenBlockPerson("martine","AB");
-    }
-
-    private void givenPerson(String name, String bloodTypes) {
-        personRepository.save(new Person(name,bloodTypes));
-    }
-
-    private void givenBlockPerson(String name, String bloodType){
-        Person blockPerson = new Person(name,bloodType);
-
-        personRepository.save(blockPerson);
+        assertThat(person.getName(),is("martine"));
     }
 
     @Test
-    void getPerson(){
-        givenPeople();
+    void getPersonIfNotFound(){
+        when(personRepository.findById(1L))
+                .thenReturn(Optional.empty());
 
-        Person person = personService.getPerson(3L);
+        Person person = personService.getPerson(1L);
 
-        System.out.println(person);
+
+    }
+    @Test
+    void put(){
+
+        personService.put(mockPersonDto());
+
+        verify(personRepository).save(any(Person.class));
+    }
+
+    @Test
+    void modifyIfPersonNotFound(){
+        when(personRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+       assertThrows(RuntimeException.class, ()->personService.modify(1L,mockPersonDto()));
+    }
+
+    @Test
+    void modifyIfNameIsDifferent(){
+        when(personRepository.findById(1L))
+                .thenReturn(Optional.of(new Person("tony")));
+
+        assertThrows(RuntimeException.class, ()->personService.modify(1L,mockPersonDto()));
+    }
+
+    @Test
+    void modify(){
+        when(personRepository.findById(1L))
+                .thenReturn(Optional.of(new Person("martine")));
+
+        personService.modify(1L,mockPersonDto());
+
+        verify(personRepository,times(1)).save(any(Person.class));
+    }
+    @Test
+    void modifyByNameIfPersonNotFound(){
+        when(personRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, ()->personService.modify(1L,"dennis"));
+    }
+    @Test
+    void modifyByName(){
+        when(personRepository.findById(1L))
+                .thenReturn(Optional.of(new Person("martine")));
+
+        personService.modify(1L,"dennis");
+
+        verify(personRepository,times(1)).save(any(Person.class));
+
+
+    }
+
+    @Test
+    void deleteIfPersonNotFound(){
+        when(personRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, ()->personService.delete(1L));
+    }
+    @Test
+    void delete(){
+        when(personRepository.findById(1L))
+                .thenReturn(Optional.of(new Person("martine")));
+
+        personService.delete(1L);
+
+        verify(personRepository,times(1)).save(any(Person.class));
+    }
+
+    private PersonDto mockPersonDto(){
+        return PersonDto.of("martine","programming","판교","programmer", LocalDate.now(),"010-1111-2222");
+    }
+
+    private static class IsPersonWillBeUpdated implements ArgumentMatcher<Person>{
+        @Override
+        public boolean matches(Person person) {
+            return person.getName().equals("martine")
+                    &&person.getHobby().equals("programming");
+        }
     }
 
 }

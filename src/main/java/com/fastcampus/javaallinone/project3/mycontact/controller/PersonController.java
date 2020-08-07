@@ -35,7 +35,7 @@ public class PersonController {
     }
     @PatchMapping("/{id}")
     public void modifyName(@PathVariable Long id, String name){
-        personService.modifyName(id,name);
+        personService.modify(id,name);
     }
     @DeleteMapping("/{id}")
     public void deletePerson(@PathVariable Long id){

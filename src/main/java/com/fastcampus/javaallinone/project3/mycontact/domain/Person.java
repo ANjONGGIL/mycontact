@@ -40,9 +40,10 @@ public class Person {
     private boolean deleted;
 
 
-    public Person(String name, String bloodTypes) {
+    public Person(String name) {
         this.name = name;
     }
+
 
     public void set(PersonDto personDto){
         if (!StringUtils.isEmpty(personDto.getHobby())) {
