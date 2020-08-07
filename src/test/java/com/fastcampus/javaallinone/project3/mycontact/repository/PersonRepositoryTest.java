@@ -18,36 +18,46 @@ class PersonRepositoryTest {
     @Autowired
     private PersonRepository personRepository;
 
+    @Test
+    void findByName(){
+        List<Person> people = personRepository.findByName("tony");
 
+        Person person = people.get(0);
+
+        assertAll(
+                ()->assertThat(person.getName(),is("tony")),
+                ()->assertThat(person.getHobby(),is("reading")),
+                ()->assertThat(person.getAddress(),is("Seoul")),
+                ()->assertThat(person.getJob(),is("officer")),
+                ()->assertThat(person.getPhoneNumber(),is("010-2222-5555")),
+                ()->assertThat(person.isDeleted(),is(false))
+        );
+    }
 
     @Test
-    void crud(){
-        Person person = new Person();
-        person.setName("john");
-
-        personRepository.save(person);
-
-        List<Person> result = personRepository.findByName("john");
-
-        assertThat(result.get(0).getName(),is("john"));
-
+    void findByNameIfDeleted(){
+        List<Person> people = personRepository.findByName("andrew");
+        assertThat(people.size(),is(0));
     }
 
     @Test
-    void findByBirthdayBetween(){
+    void findByMonthOfBirthday(){
+        List<Person> people =personRepository.findByMonthOfBirthday(7);
 
-        List<Person> result = personRepository.findByMonthOfBirthday(8);
+        assertThat(people.size(),is(2));
 
-        result.forEach(System.out::println);
-    }
-    private void givenPerson(String name,String bloodType){
-        givenPerson(name,bloodType,null);
-    }
-    private void givenPerson(String name,String bloodType,LocalDate birthday){
-        Person person = new Person(name,bloodType);
-        person.setBirthday(new Birthday(birthday));
-        personRepository.save(person);
-    }
 
+        assertAll(
+                ()->assertThat(people.get(0).getName(),is("david")),
+                ()->assertThat(people.get(1).getName(),is("tony"))
+        );
+    }
+    @Test
+    void findPeopleDeleted(){
+        List<Person> people = personRepository.findPersonDeleted();
+
+        assertThat(people.size(),is(1));
+        assertThat(people.get(0).getName(),is("andrew"));
+    }
 
 }
