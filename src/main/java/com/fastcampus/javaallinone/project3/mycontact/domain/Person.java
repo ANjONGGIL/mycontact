@@ -62,6 +62,7 @@ public class Person {
         if (personDto.getBirthday() != null){
             this.setBirthday(Birthday.of(personDto.getBirthday()));
         }
+
     }
     public Integer getAge(){
         if (this.birthday != null){
